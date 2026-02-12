@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Perspectives</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Visual Perspectives</h1>
+            <div class="nav-links">
+                <a href="/">Gallery</a>
+                <button id="themeToggle" class="theme-toggle" title="Alternar tema">&#127769;</button>
+                <a href="/login" class="btn-admin">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h2>A curated collection of moments frozen in time</h2>
+            <p>Explore, appreciate, and leave your mark with a like</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Search & Filter -->
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="&#128269; Pesquisar por título ou descrição..." class="search-input">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-sort="recent">Mais Recentes</button>
+                <button class="filter-btn" data-sort="likes">Mais Curtidas</button>
+                <button class="filter-btn" data-sort="oldest">Mais Antigas</button>
+            </div>
+        </div>
+
+        <div class="gallery" id="gallery">
+            <!-- Imagens carregadas via JavaScript -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Made with &#10084;&#65039;</p>
+    </footer>
+
+    <!-- Modal para visualizar imagem -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-toolbar">
+                <button class="modal-btn nav-btn" onclick="previousImage()" title="Anterior (seta esquerda)">
+                    <span class="modal-btn-icon" aria-hidden="true">&#8592;</span>
+                    <span class="modal-btn-label">Anterior</span>
+                </button>
+                <button class="modal-btn" onclick="zoomImage('out')" title="Diminuir zoom">
+                    <span class="modal-btn-icon" aria-hidden="true">-</span>
+                    <span class="modal-btn-label">Zoom</span>
+                </button>
+                <button class="modal-btn" onclick="zoomImage('in')" title="Aumentar zoom">
+                    <span class="modal-btn-icon" aria-hidden="true">+</span>
+                    <span class="modal-btn-label">Zoom</span>
+                </button>
+                <button class="modal-btn" onclick="toggleFullscreen()" title="Tela cheia (F)">
+                    <span class="modal-btn-icon" aria-hidden="true">&#9974;</span>
+                    <span class="modal-btn-label">Tela cheia</span>
+                </button>
+                <button class="modal-btn action-btn" onclick="downloadImage()" title="Download da imagem">
+                    <span class="modal-btn-icon" aria-hidden="true">&#8681;</span>
+                    <span class="modal-btn-label">Download</span>
+                </button>
+                <button class="modal-btn action-btn" onclick="shareImage()" title="Compartilhar imagem">
+                    <span class="modal-btn-icon" aria-hidden="true">&#10548;</span>
+                    <span class="modal-btn-label">Compartilhar</span>
+                </button>
+                <button class="modal-btn nav-btn" onclick="nextImage()" title="Proxima (seta direita)">
+                    <span class="modal-btn-icon" aria-hidden="true">&#8594;</span>
+                    <span class="modal-btn-label">Proxima</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="">
+                <div class="modal-sidebar">
+                    <div class="modal-info">
+                        <h3 id="modalTitle"></h3>
+                        <p id="modalDescription"></p>
+                        <div class="modal-stats">
+                            <span>&#10084;&#65039; <span id="modalLikes">0</span> Likes</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Comentários -->
+                    <div class="comments-section">
+                        <h4>Comentários</h4>
+                        <div class="comments-list" id="commentsList"></div>
+                        <form class="comment-form" onsubmit="submitComment(event)">
+                            <input type="email" id="commentEmail" placeholder="seu@email.com" class="comment-input" required>
+                            <textarea id="commentText" placeholder="Deixe um comentário..." class="comment-input" rows="3" required></textarea>
+                            <button type="submit" class="btn-submit" style="width: 100%; margin-top: 0.5rem;">Publicar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para email do like -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content email-modal">
+            <span class="close" onclick="closeEmailModal()">&times;</span>
+            <h3>Curtir esta imagem</h3>
+            <p>Digite seu email para curtir:</p>
+            <input type="email" id="emailInput" placeholder="seu@email.com" required>
+            <button onclick="submitLike()" class="btn-submit">Curtir</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
+

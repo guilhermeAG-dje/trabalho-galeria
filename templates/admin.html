@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Visual Perspectives</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Visual Perspectives - Admin</h1>
+            <div class="nav-links">
+                <a href="/">Gallery</a>
+                <a href="/upload" class="btn-upload">+ Upload</a>
+                <a href="/logout" class="btn-logout">Logout ({{ username }})</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container admin-panel">
+        <h2>Painel de Administração</h2>
+        
+        <!-- Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Imagens</h3>
+                <p class="stat-number">{{ total_images }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total de Likes</h3>
+                <p class="stat-number">{{ total_likes }}</p>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3>Top 5 Imagens Mais Curtidas</h3>
+                <canvas id="topImagesChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Uploads Recentes</h3>
+                <canvas id="uploadsChart"></canvas>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <h2>Gerenciar Imagens</h2>
+        
+        {% if images %}
+            <div class="admin-grid">
+                {% for image in images %}
+                    <div class="admin-card">
+                        <img src="/uploads/{{ image.filename }}" alt="{{ image.title }}">
+                        <div class="admin-info">
+                            <h3>{{ image.title }}</h3>
+                            <p class="description">{{ image.description }}</p>
+                            <p class="likes">❤️ {{ image.likes }} likes</p>
+                            <p class="date">{{ image.uploaded_at }}</p>
+                            <form method="POST" action="/delete/{{ image.id }}" style="display: inline;">
+                                <button type="submit" class="btn-delete" onclick="return confirm('Deseja deletar?')">Deletar</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-images">Nenhuma imagem ainda. <a href="/upload">Enviar primeira imagem</a></p>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <p>Made with ❤️</p>
+    </footer>
+
+    <script>
+        // Dados dos gráficos
+        const topImages = {{ top_images|tojson }};
+        const uploadStats = {{ upload_stats|tojson }};
+
+        // Gráfico de Top Imagens
+        const topCtx = document.getElementById('topImagesChart').getContext('2d');
+        new Chart(topCtx, {
+            type: 'bar',
+            data: {
+                labels: topImages.map(img => img.title),
+                datasets: [{
+                    label: 'Likes',
+                    data: topImages.map(img => img.likes),
+                    backgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Gráfico de Uploads
+        const uploadCtx = document.getElementById('uploadsChart').getContext('2d');
+        new Chart(uploadCtx, {
+            type: 'line',
+            data: {
+                labels: uploadStats.map(stat => stat.date),
+                datasets: [{
+                    label: 'Imagens Subidas',
+                    data: uploadStats.map(stat => stat.count),
+                    borderColor: '#764ba2',
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Visual Perspectives</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Visual Perspectives</h1>
+            <div class="nav-links">
+                <a href="/">Gallery</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container login-container">
+        <div class="login-box">
+            <h2>Admin Access</h2>
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+            <form method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+            <p class="login-info">
+                <strong>Demo Credentials:</strong><br>
+                Usuário: admin1 | Senha: 123456<br>
+                Usuário: admin2 | Senha: 123456
+            </p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Made with ❤️</p>
+    </footer>
+</body>
+</html>

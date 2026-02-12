@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - Visual Perspectives</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Visual Perspectives</h1>
+            <div class="nav-links">
+                <a href="/">Gallery</a>
+                <a href="/admin" class="btn-admin">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container upload-container">
+        <div class="upload-box">
+            <h2>Upload Image</h2>
+            {% if error %}
+                <div class="error-alert">{{ error }}</div>
+            {% endif %}
+            <div id="errorMessage" class="error-alert" style="display: none;"></div>
+            <form method="POST" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                <div class="form-group">
+                    <label for="title">Título:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrição:</label>
+                    <textarea id="description" name="description" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">📸 Selecione a imagem:</label>
+                    <input type="file" id="file" name="file" accept=".jpg,.jpeg" required>
+                    <small id="fileInfo">✅ Apenas <strong>JPG/JPEG</strong> | Máximo <strong>5MB</strong></small>
+                </div>
+
+                <button type="submit" class="btn-submit">Upload</button>
+                <a href="/admin" class="btn-cancel">Cancelar</a>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Made with ❤️</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('file');
+        const fileInfo = document.getElementById('fileInfo');
+        const errorMessage = document.getElementById('errorMessage');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = this.files[0];
+            hideError();
+            
+            if (!file) {
+                fileInfo.innerHTML = '✅ Apenas <strong>JPG/JPEG</strong> | Máximo <strong>5MB</strong>';
+                return;
+            }
+
+            const fileName = file.name.toLowerCase();
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+
+            // Mostrar informações do arquivo
+            let info = `📁 ${file.name}<br>`;
+
+            // Validar extensão
+            if (!fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg')) {
+                showError(`❌ Erro: Apenas JPG são permitidos!<br>Seu arquivo: ${file.name}`);
+                fileInput.value = '';
+                return;
+            }
+
+            // Validar tipo MIME
+            if (file.type !== 'image/jpeg') {
+                showError(`❌ Erro: O arquivo deve ser JPG (image/jpeg)!<br>Tipo recebido: ${file.type}`);
+                fileInput.value = '';
+                return;
+            }
+
+            // Validar tamanho
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                showError(`❌ Erro: Arquivo muito grande!<br>Tamanho: ${fileSize}MB (máximo 5MB)`);
+                fileInput.value = '';
+                return;
+            }
+
+            // Se tudo está OK
+            info += `✅ JPG válido | ${fileSize}MB`;
+            fileInfo.innerHTML = info;
+            fileInfo.style.color = '#27ae60';
+        });
+
+        form.addEventListener('submit', function(e) {
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                e.preventDefault();
+                showError('⚠️ Selecione um arquivo!');
+                return;
+            }
+
+            // Validar extensão (APENAS JPG)
+            const fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg')) {
+                e.preventDefault();
+                showError('❌ Erro: Apenas ficheiros JPG são permitidos!<br>Seu arquivo: ' + file.name);
+                return;
+            }
+
+            // Validar tipo MIME
+            if (file.type !== 'image/jpeg') {
+                e.preventDefault();
+                showError('❌ Erro: O arquivo deve ser JPG (image/jpeg)!');
+                return;
+            }
+
+            // Validar tamanho
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                e.preventDefault();
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                showError('❌ Erro: Arquivo muito grande!<br>Tamanho: ' + sizeMB + 'MB (máximo 5MB)');
+                return;
+            }
+
+            // Validar título
+            const title = document.getElementById('title').value.trim();
+            if (!title) {
+                e.preventDefault();
+                showError('❌ Erro: O título é obrigatório!');
+                return;
+            }
+
+            // Se passou todas as validações
+            console.log('✅ Validações OK: Enviando arquivo JPG válido');
+            hideError();
+        });
+
+        function showError(message) {
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = 'block';
+            errorMessage.style.color = '#721c24';
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
+

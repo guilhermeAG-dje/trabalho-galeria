@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: visual-perspectives
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DB_PATH
+        value: /var/data/gallery.db
+      - key: UPLOAD_FOLDER
+        value: /var/data/uploads
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

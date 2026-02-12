@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste - Visual Perspectives</title>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+    <h1>Teste da Galeria - Visual Perspectives</h1>
+    
+    <h2>✅ Status do Servidor</h2>
+    <div id="status" style="padding: 10px; background: #f0f0f0; border-radius: 5px;"></div>
+    
+    <h2>🖼️ Imagens Carregadas</h2>
+    <div id="images" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
+    
+    <h2>🌙 Teste Dark Mode</h2>
+    <button onclick="testTheme()">Clique para Testar Dark Mode</button>
+    <p id="themeStatus">LocalStorage Theme: <span id="themeValue">-</span></p>
+    
+    <script>
+        // Teste da API
+        async function testAPI() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/images');
+                const data = await response.json();
+                
+                document.getElementById('status').innerHTML = `
+                    <p>✅ Servidor respondendo</p>
+                    <p>Total de imagens na API: ${data.length}</p>
+                `;
+                
+                // Exibir imagens
+                const imagesDiv = document.getElementById('images');
+                if (data.length === 0) {
+                    imagesDiv.innerHTML = '<p>Nenhuma imagem encontrada</p>';
+                } else {
+                    data.forEach(img => {
+                        imagesDiv.innerHTML += `
+                            <div style="border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+                                <img src="http://127.0.0.1:5000/uploads/${img.filename}" 
+                                     style="width: 100%; height: 200px; object-fit: cover;" 
+                                     onerror="this.innerHTML='Imagem não disponível'">
+                                <div style="padding: 10px;">
+                                    <h3>${img.title}</h3>
+                                    <p>${img.description}</p>
+                                    <p>❤️ ${img.likes} likes</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = `
+                    <p>❌ Erro: ${error.message}</p>
+                    <p>Certifique-se de que o servidor Flask está rodando em http://127.0.0.1:5000</p>
+                `;
+            }
+        }
+        
+        // Teste Dark Mode
+        function testTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            document.getElementById('themeValue').textContent = newTheme + ' (clique novamente para mudar)';
+            if (newTheme === 'dark') {
+                document.body.style.background = '#1a1a2e';
+                document.body.style.color = '#fff';
+            } else {
+                document.body.style.background = '#fff';
+                document.body.style.color = '#000';
+            }
+        }
+        
+        // Carregar dados na página
+        testAPI();
+        document.getElementById('themeValue').textContent = localStorage.getItem('theme') || 'light';
+    </script>
+</body>
+</html>
