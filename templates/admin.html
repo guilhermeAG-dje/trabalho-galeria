@@ -46,6 +46,41 @@
             </div>
         </div>
 
+        <div class="permissions-panel">
+            <h2>Permissoes de Upload (JPG)</h2>
+            <p class="permissions-help">Apenas emails autorizados podem ser usados no formulario de upload.</p>
+
+            {% if permission_error %}
+                <div class="error-alert">{{ permission_error }}</div>
+            {% endif %}
+            {% if permission_success %}
+                <div class="success-alert">{{ permission_success }}</div>
+            {% endif %}
+
+            <form method="POST" action="/admin/upload-permissions" class="permission-form">
+                <input type="email" name="upload_email" placeholder="email@exemplo.com" required>
+                <button type="submit" class="btn-submit permission-submit">Autorizar Email</button>
+            </form>
+
+            {% if upload_permissions %}
+                <div class="permission-list">
+                    {% for permission in upload_permissions %}
+                        <div class="permission-item">
+                            <div>
+                                <strong>{{ permission.email }}</strong>
+                                <p>Criado por {{ permission.created_by or 'admin' }} em {{ permission.created_at }}</p>
+                            </div>
+                            <form method="POST" action="/admin/upload-permissions/delete/{{ permission.id }}">
+                                <button type="submit" class="btn-delete">Remover</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-images">Nenhum email autorizado ainda.</p>
+            {% endif %}
+        </div>
+
         <hr class="divider">
 
         <h2>Gerenciar Imagens</h2>
